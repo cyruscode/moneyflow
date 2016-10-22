@@ -1,6 +1,6 @@
 "use strict";
 
-var Account = require("./models/account.js");
+var Account = require("../models/account.js");
 
 class AccountMapper{
 

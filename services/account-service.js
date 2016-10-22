@@ -3,13 +3,12 @@
 class AccountService {
 
 	constructor(options){
-		this.options = options;
+		this.userService = options._userService;
 	}
-	
 	
 	getAccounts(userId, callback){
 		
-		this.options._userService.getUser(userId, function(err, user){
+		this.userService.getUser(userId, function(err, user){
 			
 			if (err){
 				callback(err);
@@ -33,28 +32,35 @@ class AccountService {
 		})
 	}
 	
-	saveAccount(userId, newAccount, callback){
-		var me = this;
-		
-		this.options._userService.getUser(userId, function(err, user){
+	createAccount(userId, newAccount, callback){
+
+		this.userService.getUser(userId, function(err, user){
 			if (err){
 				return callback(err);
 			}
 			
-			var oldAccount= user.accounts.filter(function(account){
-			  return account._id.equals(newAccount._id);
-			});
-
-			console.log(oldAccount);
+			user.accounts.push(newAccount);
 			
-			if (oldAccount.length ==0 ){
-			  user.accounts.push(newAccount);
-			  console.log("add account");
-			}else{
-	      let index = user.accounts.indexOf(oldAccount[0]);
-			  user.accounts.splice(index, 1 , newAccount);
-			  console.log("replace account");
+			user.save(function(err, user){
+				  
+				if (err){
+					return callback(err);
+				}
+				
+				return callback(null, newAccount);
+			});
+		});
+	}
+	
+	updateAccount(userId, newAccount, callback){
+		this.userService.getUser(userId, function(err, user){
+			if (err){
+				return callback(err);
 			}
+			
+			var oldAccount = user.accounts.id(newAccount._id);
+			let index = user.accounts.indexOf(oldAccount[0]);
+			user.accounts.splice(index, 1 , newAccount);
 			
 			user.save(function(err, user){
 			  
@@ -63,41 +69,29 @@ class AccountService {
 				}
 				
 				return callback(null, newAccount);
-			})
-			
+			});
 		});
 	}
 	
-  deleteAccount(userId, accountId, callback){
+	deleteAccount(userId, accountId, callback){
     
-    this.options._userService.getUser(userId, function(err, user){
-      
-      if (err){
-        return callback(err);
-      }
-      
-      let account = user.accounts.filter(function (account) {
-        return account.id === accountId;
-      });
-      
-      if (account === null){
-        return callback("account " + accountId + " not found");
-      }
-      
-      let index = user.accounts.indexOf(account);
-      user.accounts.splice(index, 1);
-      
-      user.save(function (err) {
-        if (err) {
-            return callback(err);
-        }
-
-        return callback(null, user);
-      });
-    });
-  }
-
-
+	    this.userService.getUser(userId, function(err, user){
+	      
+	      if (err){
+	        return callback(err);
+	      }
+	      
+	      user.accounts.id(accountId).remove();
+	      
+	      user.save(function (err) {
+	        if (err) {
+	            return callback(err);
+	        }
+	
+	        return callback(null, user);
+	      });
+	    });
+	}
 }
 
 
