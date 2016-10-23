@@ -5,54 +5,55 @@ class UserService {
 	constructor(options){
 		this.options = options;
 	}
-	
-	
-    getUsers(callback) {
-    	
-        this.options._user.find(function (err, users) {
-            if (err) {
-                return callback(err);
-            }
 
-            return callback(null, users);
-        });
-    }
+  getUsers() {
+		var me = this;
+  	return new Promise(function(resolve, reject){
+			me.options._user.find(function (err, users) {
+					if (err) {
+							return reject(err);
+					}
+					return resolve(users);
+			});
+		});
+  }
 
-    getUser(userId, callback) {
+  getUser(userId) {
+		var me = this;
+		return new Promise(function(resolve, reject){
+			me.options._user.findById(userId, function (err, user) {
+					if (err) {
+							return reject(err);
+					}
+					return resolve(user);
+			});
+		});
+  }
 
-        this.options._user.findById(userId, function (err, user) {
-            if (err) {
-                return callback(err);
-            }
+  saveUser(user) {
+		return new Promise(function(resolve, reject){
+			user.save(function (err) {
+					if (err) {
+						return reject(err);
+					}
+					return resolve(user);
+			});
+		});
+  }
 
-            return callback(null, user);
-        });
-    }
-    
-    
-    saveUser(user, callback) {
-
-        user.save(function (err) {
-            if (err) {
-                return callback(err);
-            }
-
-            return callback(null, user);
-        });
-    }
-
-    deleteUser(userId, callback) {
-        this.options._user.remove(
-            {_id: userId},
-            function (err, user) {
-                if (err) {
-                    return callback(err);
-                }
-
-                return callback(null);
-            });
-    }
-
+  deleteUser(userId, callback) {
+		var me = this;
+		return new Promise(function(resolve, reject){
+			me.options._user.remove(
+					{_id: userId},
+					function (err, user) {
+						if (err) {
+								return reject(err);
+						}
+						return resolve("success");
+					});
+			});
+  	}
 }
 
 module.exports = UserService;

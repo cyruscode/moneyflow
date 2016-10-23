@@ -1,4 +1,4 @@
-"use strict";	
+"use strict";
 
 let express = require('express');
 
@@ -19,30 +19,21 @@ router.route("/:userId/accounts")
     .post(function (req, res) {
         let userId = req.params.userId;
         let account = accountMapper.requestToAccount(req);
-        accountService.createAccount(userId, account, function (err, newAccount) {
 
-        	if (err) {
-        	  return res.send(err);
-          }
-
-          return res.json(newAccount);
-        });
+        accountService.createAccount(userId, account)
+        .then(function(newAccount){return res.json(newAccount);})
+        .catch(function(err){return res.send(err);});
     })
-    
+
     .get(function (req, res) {
     	 let userId = req.params.userId;
-    	 
+
     	 if (userId == undefined){
     		 res.send("UserId undefined");
     	 }
-    	 
-    	 accountService.getAccounts(userId, function (err, accounts) {
-    	   if (err){
-    	     return res.send(err);
-    	   }
-
-         return res.json(accounts);
-    	 });
+    	 accountService.getAccounts(userId)
+       .then(function(accounts){return res.json(accounts);})
+       .catch(function(err){return res.send(err);});
     });
 
 router.route("/:userId/accounts/:accountId")
@@ -50,42 +41,29 @@ router.route("/:userId/accounts/:accountId")
         let userId = req.params.userId;
         let accountId = req.params.accountId;
 
-        accountService.getAccount(userId, accountId, function(err, account){
-            if (err){
-        		return res.send(err);
-        	}
-	
-	       return res.json(account);
-        });
+        accountService.getAccount(userId, accountId)
+        .then(function(account){return res.json(account)})
+        .catch(function(err){return res.send(err);});
     })
-    
+
     .put(function(req, res){
       let userId = req.params.userId;
       let accountId = req.params.accountId;
-      
+
       var account = accountMapper.requestToAccount(req);
       account._id = accountId;
-      accountService.updateAccount(userId, account, function(err, account){
-        
-        if (err){
-          return res.send(err);
-        }
-        
-        return res.json(account);
-      });
+      accountService.updateAccount(userId, account)
+      .then(function(account){return res.json(account);})
+      .catch(function(err){return res.send(err);});
     })
 
     .delete(function (req, res) {
       let userId = req.params.userId;
       let accountId = req.params.accountId;
-    
-      accountService.deleteAccount(userId, accountId, function (err, user) {
-        if (err) {
-          return res.send(err);
-        }
 
-        return res.json(user);
-      });
+      accountService.deleteAccount(userId, accountId)
+      .then(function(user){return res.json(user);})
+      .catch(function(err){return res.send(err);});
   });
 
 module.exports = router;

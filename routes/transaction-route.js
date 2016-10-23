@@ -1,4 +1,4 @@
-"use strict";	
+"use strict";
 
 let express = require('express');
 
@@ -16,7 +16,7 @@ let accountService = new AccountService({_userService : userService});
 let transactionService = new TransactionService({_userService : userService, _accountService : accountService});
 
 let transactionMapper = new TransactionMapper();
-
+let Promise = require('bluebird');
 let router = express.Router();
 
 router.route("/:userId/accounts/:accountId/transactions")
@@ -24,31 +24,24 @@ router.route("/:userId/accounts/:accountId/transactions")
 	.post(function(req, res){
 		let userId = req.params.userId;
 		let accountId = req.params.accountId;
-		
-		let transaction = transactionMapper.requestToTransaction(req);
-		
-		transactionService.create(userId, accountId, transaction, function(err, newTransaction){
-			
-			if (err){
-				return res.send(err);
-			}
-			
-			return res.json(newTransaction);
-			
-		});
-	})
 
+		let transaction = transactionMapper.requestToTransaction(req);
+
+		transactionService.create(userId, accountId, transaction)
+		.then(function(newTransaction){
+			return res.json(newTransaction);
+		}).catch(function(err){return res.send(err);});
+	})
 
 	.get(function(req, res){
 	      let userId = req.params.userId;
 	      let accountId = req.params.accountId;
-	      
-	      transactionService.getTransactions(userId, accountId, function(err, transactions){
-	    	  if (err){
-	    		  return res.send(err);
-	    	  }
-	    	  
+
+	      transactionService.getTransactions(userId, accountId)
+	      .then(function(transactions){
 	    	  return res.json(transactions);
+	      }).catch(function(err){
+	    	  return res.send(err);
 	      });
 	});
 
@@ -58,29 +51,28 @@ router.route("/:userId/accounts/:accountId/transactions/:transactionId")
 		let userId = req.params.userId;
 		let accountId = req.params.accountId;
 		let transactionId = req.params.transactionId;
-		
-		transactionService.getTransaction(userId, accountId, transactionId, function(err, transaction){
-			if (err){
+
+		transactionService.getTransaction(userId, accountId, transactionId)
+			.then(function(transaction){
+				return res.json(transaction);
+			}).catch(function(err){
 				return res.send(err);
-			}
-			
-			return res.json(transaction);
-		});
+			});
 	})
-	
+
 	.put(function(req, res){
-		
+
 		  let userId = req.params.userId;
 	      let accountId = req.params.accountId;
 	      let transactionId = req.params.transactionId;
-		
+
 	      let newTransaction = transactionMapper.requestToExistingTransaction(req, transactionId);
-	      
-	      transactionService.update(userId, accountId, newTransaction, function(err, transaction){
-	    	  if (err){
-	    		  return res.send(err);
-	    	  }
-	    	  return res.json(transaction);
+
+	      transactionService.update(userId, accountId, newTransaction)
+	      .then(function(newTransaction){
+	    	  return res.json(newTransaction);
+	      }).catch(function(err){
+	    	  return res.send(err);
 	      });
 	})
 
@@ -88,14 +80,13 @@ router.route("/:userId/accounts/:accountId/transactions/:transactionId")
       let userId = req.params.userId;
       let accountId = req.params.accountId;
       let transactionId = req.params.transactionId;
-    
-      transactionService.delete(userId, accountId, transactionId, function (err, account) {
-        if (err) {
-          return res.send(err);
-        }
 
-        return res.json(account);
-      });
+      transactionService.delete(userId, accountId, transactionId)
+      .then(function(account){
+    	  return res.json(account);
+      }).catch(function(err){
+    	  return res.send(err);
+      })
   });
 
 module.exports = router;
