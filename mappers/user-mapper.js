@@ -1,6 +1,7 @@
 "use strict";
 
 var User = require("../models/user.js");
+
 class UserMapper{
 
     requestToUser(req){

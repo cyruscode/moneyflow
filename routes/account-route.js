@@ -13,7 +13,7 @@ let router = express.Router();
 
 let accountMapper = new AccountMapper();
 let userService = new UserService({_user : User});
-let accountService = new AccountService({_userService : userService});
+let accountService = new AccountService({_userService : userService,  _user : User});
 
 router.route("/:userId/accounts")
     .post(function (req, res) {

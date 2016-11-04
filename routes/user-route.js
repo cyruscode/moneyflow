@@ -8,51 +8,72 @@ let UserService = require("../services/user-service.js");
 let router = express.Router();
 
 var userMapper = new UserMapper();
-var userService = new UserService({_user : User});
+var userService = new UserService({_user: User});
 
 router.route('/')
-	.post(function (req, res) {
+    .post(function (req, res) {
 
-	    let user = userMapper.requestToUser(req);
+        let user = userMapper.requestToUser(req);
 
-	    userService.saveUser(user)
-			.then(function(user){return res.json(user);})
-			.catch(function(err){return res.send(err);});
-	})
+        userService.saveUser(user)
+            .then(function (user) {
+                return res.json(user);
+            })
+            .catch(function (err) {
+                return res.send(err);
+            });
+    })
 
-	.get(function (req, res) {
-	    userService.getUsers()
-			.then(function(users){return res.json(users);})
-			.catch(function(err){return res.send(err);});
-	});
+    .get(function (req, res) {
+        userService.getUsers()
+            .then(function (users) {
+                return res.json(users);
+            })
+            .catch(function (err) {
+                return res.send(err);
+            });
+    });
 
 router.route("/:id")
-	.get(function (req, res) {
+    .get(function (req, res) {
 
-	    userService.getUser(req.params.id)
-			.then(function(user){return res.json(user);})
-			.catch(function(err){return res.send(err);});
-	})
+        userService.getUser(req.params.id)
+            .then(function (user) {
+                return res.json(user);
+            })
+            .catch(function (err) {
+                return res.send(err);
+            });
+    })
 
-	.put(function (req, res) {
-		var me = this;
-    userService.getUser(req.params.id)
-		.then(function(user){
+    .put(function (req, res) {
+        userService.getUser(req.params.id)
+            .then(function (user) {
 
-			let mappedUser = userMapper.requestToExistingUser(req, user);
-			
-			userService.saveUser(mappedUser)
-				.then(function(newUser){return res.json(newUser);})
-				.catch(function(err){return res.send(err);});
-		})
-		.catch(function(err){return res.send(err);});
-	})
+                let mappedUser = userMapper.requestToExistingUser(req, user);
 
-	.delete(function (req, res) {
-	    userService.deleteUser(req.params.id)
-			.then(function(success){  return res.json({message: 'Successfully deleted'});})
-			.catch(function(err){return res.send(err);});
-	});
+                userService.saveUser(mappedUser)
+                    .then(function (newUser) {
+                        return res.json(newUser);
+                    })
+                    .catch(function (err) {
+                        return res.send(err);
+                    });
+            })
+            .catch(function (err) {
+                return res.send(err);
+            });
+    })
+
+    .delete(function (req, res) {
+        userService.deleteUser(req.params.id)
+            .then(function (success) {
+                return res.json({message: 'Successfully deleted'});
+            })
+            .catch(function (err) {
+                return res.send(err);
+            });
+    });
 
 
 module.exports = router;

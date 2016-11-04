@@ -2,108 +2,108 @@
 
 var Promise = require('bluebird');
 
-class TransactionService{
+class TransactionService {
 
-	constructor(options){
-		this.userService = options._userService;
-		this.accountService = options._accountService;
-	}
+    constructor(options) {
+        this.userService = options._userService;
+        this.accountService = options._accountService;
+    }
 
-	getTransactions(userId, accountId){
-		var me = this;
-		return new Promise(function(resolve, reject){
-			me.accountService.getAccount(userId, accountId)
-			.then(function(account){
-				return resolve(account.transactions);
-			}).catch(function(err){
-				return reject(err);
-			});
-		});
-	}
+    getTransactions(userId, accountId) {
+        var me = this;
+        return new Promise(function (resolve, reject) {
+            me.accountService.getAccount(userId, accountId)
+                .then(function (account) {
+                    return resolve(account.transactions);
+                }).catch(function (err) {
+                return reject(err);
+            });
+        });
+    }
 
-	getTransaction(userId, accountId, transactionId){
+    getTransaction(userId, accountId, transactionId) {
 
-		var me = this;
-		return new Promise(function(resolve, reject){
-			me.accountService.getAccount(userId, accountId)
-			.then(function(account){
-				return resolve(account.transactions.id(transactionId));})
-			.catch(function(err){return reject(err);});
-		});
-	}
+        var me = this;
+        return new Promise(function (resolve, reject) {
+            me.accountService.getAccount(userId, accountId)
+                .then(function (account) {
+                    return resolve(account.transactions.id(transactionId));
+                })
+                .catch(function (err) {
+                    return reject(err);
+                });
+        });
+    }
 
-	create(userId, accountId, transaction){
-		var me =this;
-		return new Promise(function(resolve, reject){
-			me.userService.getUser(userId, function(err, user){
+    create(userId, accountId, transaction) {
+        var me = this;
+        return new Promise(function (resolve, reject) {
+            me.userService.getUser(userId)
+                .then(function (user) {
+                    let account = user.accounts.id(accountId);
+                    account.transactions.push(transaction);
 
-		    	if (err){
-		    		reject(err);
-		    	}
+                    user.saveAsync()
+                        .then(function (user) {
+                            return resolve(transaction);
+                        }).catch(function (err) {
+                        return reject(err)
+                    });
 
-		    	let account = user.accounts.id(accountId);
-		    	account.transactions.push(transaction);
+                }).catch(function (err) {
+                return reject(err);
 
-		    	user.save(function(err){
-		    		if (err) {
-			              reject(err);
-			          }
+            });
+        });
 
-			          return resolve(transaction);
-		    	});
-			});
-		});
+    }
 
-	}
+    update(userId, accountId, transaction) {
+        var me = this;
 
-	update(userId, accountId, transaction){
-		var me =this;
+        return new Promise(function (resolve, reject) {
+            me.userService.getUser(userId)
+                .then(function (user) {
+                    let transactions = user.accounts.id(accountId).transactions;
+                    let oldTransaction = transactions.id(transaction._id);
+                    let index = transactions.indexOf(oldTransaction);
+                    transactions.splice(index, 1, transaction);
 
-		return new Promise(function(resolve, reject){
-			me.userService.getUser(userId, function(err, user){
-
-    		if (err){
-  				return reject(err);
-	    	}
-
-		    let transactions = user.accounts.id(accountId).transactions;
-		    let oldTransaction = transactions.id(transaction._id);
-				let index = transactions.indexOf(oldTransaction[0]);
-				transactions.splice(index, 1 , transaction);
-
-		    	user.save(function(err){
-		    		if (err) {
-		    			return reject(err);
-			        }
-			        return resolve(transaction);
-		    	});
-			});
-		});
-	}
+                    user.saveAsync().then(function (user) {
+                        return resolve(transaction);
+                    }).catch(function (err) {
+                        return reject(err)
+                    });
 
 
-	delete(userId, accountId, transactionId){
-		var me = this;
+                }).catch(function (err) {
+                return reject(err)
+            });
+        });
+    }
 
-		return new Promise(function(resolve, reject){
-			 me.userService.getUser(userId, function(err, user){
-				 if (err){
-					 return reject(err);
-		    	}
 
-		    	let account = user.accounts.id(accountId);
-		    	account.transactions.id(transactionId).remove();
+    delete(userId, accountId, transactionId) {
+        var me = this;
 
-		        user.save(function (err) {
-		        	if (err) {
-		        		return reject(err);
-		        	}
+        return new Promise(function (resolve, reject) {
+            me.userService.getUser(userId)
+                .then(function (user) {
 
-		        	return resolve(account);
-		        });
-		    });
-		});
-	}
+                    let account = user.accounts.id(accountId);
+                    account.transactions.id(transactionId).remove();
+
+                    user.saveAsync()
+                        .then(function (user) {
+                            return resolve(account);
+                        }).catch(function (err) {
+                        return reject(err);
+                    });
+                }).catch(function (err) {
+                return reject(err);
+            });
+        });
+    }
 }
 
 module.exports = TransactionService;

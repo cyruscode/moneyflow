@@ -2,6 +2,9 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var Promise = require('bluebird');
+Promise.promisifyAll(mongoose);
+
 var Account = require('./account.js');
 
 var UserSchema = new Schema({
@@ -11,5 +14,7 @@ var UserSchema = new Schema({
     lastLogin: Date,
     accounts: [Account.schema]
 });
+
+
 
 module.exports = mongoose.model('User', UserSchema);

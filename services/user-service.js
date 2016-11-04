@@ -2,58 +2,25 @@
 
 class UserService {
 
-	constructor(options){
-		this.options = options;
-	}
+    constructor(options) {
+        this.options = options;
+    }
 
-  getUsers() {
-		var me = this;
-  	return new Promise(function(resolve, reject){
-			me.options._user.find(function (err, users) {
-					if (err) {
-							return reject(err);
-					}
-					return resolve(users);
-			});
-		});
-  }
+    getUsers() {
+        return this.options._user.findAsync();
+    }
 
-  getUser(userId) {
-		var me = this;
-		return new Promise(function(resolve, reject){
-			me.options._user.findById(userId, function (err, user) {
-					if (err) {
-							return reject(err);
-					}
-					return resolve(user);
-			});
-		});
-  }
+    getUser(userId) {
+        return this.options._user.findByIdAsync(userId);
+    }
 
-  saveUser(user) {
-		return new Promise(function(resolve, reject){
-			user.save(function (err) {
-					if (err) {
-						return reject(err);
-					}
-					return resolve(user);
-			});
-		});
-  }
+    saveUser(user) {
+        return user.saveAsync();
+    }
 
-  deleteUser(userId, callback) {
-		var me = this;
-		return new Promise(function(resolve, reject){
-			me.options._user.remove(
-					{_id: userId},
-					function (err, user) {
-						if (err) {
-								return reject(err);
-						}
-						return resolve("success");
-					});
-			});
-  	}
+    deleteUser(userId) {
+        return this.options._user.removeAsync({_id: userId});
+    }
 }
 
 module.exports = UserService;

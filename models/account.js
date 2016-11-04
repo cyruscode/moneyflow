@@ -1,5 +1,7 @@
 var mongoose     = require('mongoose');
 var Transaction = require('./transaction.js');
+var Promise = require('bluebird');
+Promise.promisifyAll(mongoose);
 var Schema       = mongoose.Schema;
 
 var AccountSchema   = new Schema({
