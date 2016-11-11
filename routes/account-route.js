@@ -3,7 +3,6 @@
 let express = require('express');
 
 let User = require('../models/user.js');
-let Account = require('../models/account.js');
 
 let UserService = require("../services/user-service.js");
 let AccountMapper = require("../mappers/account-mapper.js");
