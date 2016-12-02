@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;        // set our port
 var config = require('./config');
 var mongoose = require('mongoose');
-mongoose.connect(config.db.productions); // connect to our db
+mongoose.connect(config.db.development); // connect to our db
 
 // ROUTES FOR OUR API
 // =============================================================================

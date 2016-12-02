@@ -1,6 +1,9 @@
 "use strict";
 var Promise = require('bluebird');
 
+const userService = require("../services/user-service.js");
+
+
 class AccountService {
 
     constructor(options) {
@@ -104,4 +107,4 @@ class AccountService {
 }
 
 
-module.exports = AccountService;
+module.exports = new AccountService({_userService: userService});

@@ -1,19 +1,23 @@
 "use strict";
 
-var Account = require("../models/account.js");
+const Account = require("../models/account");
+const transactionMapper = require("./transaction-mapper");
 
-class AccountMapper{
+class AccountMapper {
 
-    requestToAccount(req){
-        let account = new Account();
-        account.bankName = req.body.bankName;
-        account.accountType = req.body.accountType;
-        account.initialBalance =req.body.initialBalance;
-        account.minimumRequired = req.body.minimumRequired;
+  requestToAccount(req) {
+    let account = new Account();
+    account.bankName = req.body.bankName;
+    account.accountType = req.body.accountType;
+    account.initialBalance = req.body.initialBalance;
+    account.minimumRequired = req.body.minimumRequired;
 
-        return account;
+    return account;
+  }
 
-    }
+  map({_id, bankName, accountType, initialBalance, minimumRequired, transactions= []}){
+    return {id : _id, bankName, accountType, initialBalance, minimumRequired, transactions : transactions.map((transaction) => transactionMapper.map(transaction))};
+  }
 }
 
-module.exports = AccountMapper;
+module.exports = new AccountMapper();

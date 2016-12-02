@@ -1,6 +1,9 @@
 "use strict";
 
-var Promise = require('bluebird');
+const Promise = require('bluebird');
+
+const userService = require("../services/user-service");
+const accountService = require("../services/account-service");
 
 class TransactionService {
 
@@ -106,4 +109,4 @@ class TransactionService {
     }
 }
 
-module.exports = TransactionService;
+module.exports =  new TransactionService({_userService: userService, _accountService: accountService});;

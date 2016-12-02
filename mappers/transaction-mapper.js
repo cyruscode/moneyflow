@@ -1,26 +1,31 @@
 "use strict";
 
-var Transaction = require("../models/transaction.js");
-class TransactionMapper{
+var Transaction = require("../models/transaction");
 
-    requestToTransaction(req){
-        let transaction = new Transaction();
-        transaction.date = req.body.date;
-        transaction.amount = req.body.amount;
-        transaction.note = req.body.note;
-        return transaction;
-    }
+class TransactionMapper {
 
-    requestToExistingTransaction(req, transactionId){
-        let transaction = new Transaction();
+  map({_id, date, amount, note} = input) {
+    return {id: _id, date, amount, note};
+  }
 
-    	transaction._id = transactionId;
-    	transaction.date = req.body.date;
-        transaction.amount = req.body.amount;
-        transaction.note = req.body.note;
-        return transaction;
-    }
+  requestToTransaction({date, amount, note}=req) {
+    let transaction = new Transaction();
+    transaction.date = date;
+    transaction.amount = amount;
+    transaction.note = note;
+    return transaction;
+  }
+
+  requestToExistingTransaction({date, amount, note} = req, transactionId) {
+    let transaction = new Transaction();
+
+    transaction._id = transactionId;
+    transaction.date = date;
+    transaction.amount = amount;
+    transaction.note = note;
+    return transaction;
+  }
 
 }
 
-module.exports = TransactionMapper;
+module.exports = new TransactionMapper();

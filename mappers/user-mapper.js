@@ -1,29 +1,30 @@
 "use strict";
 
-var User = require("../models/user.js");
+const User = require("../models/user.js");
+const accountMapper= require("./account-mapper");
 
-class UserMapper{
+class UserMapper {
 
-    requestToUser(req){
+  requestToUser({username, password, email}=req) {
 
-        let user = new User();
-        user.username = req.body.username;
-        user.password = req.body.password;
-        user.email = req.body.email;
-        user.lastLogin = new Date();
+    let user = new User();
+    user.username = username
+    user.password = password;
+    user.email = email;
+    user.lastLogin = new Date();
+    return user;
+  }
 
-        return user;
-    }
+  map({_id, username, password, email, lastLogin, accounts = []} = user) {
+    return {id : _id, username, password, email, lastLogin, accounts: accounts.map((account) => accountMapper.map(account))};
+  }
 
-    requestToExistingUser(req, user){
-
-        user.username = req.body.username;
-        user.password = req.body.password;
-        user.email = req.body.email;
-
-        return user;
-    }
-
+  requestToExistingUser(req, user) {
+    user.username = req.body.username;
+    user.password = req.body.password;
+    user.email = req.body.email;
+    return user;
+  }
 }
 
-module.exports = UserMapper;
+module.exports = new UserMapper();
