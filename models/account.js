@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Transaction = require('./transaction.js');
+var Transaction = require('./transaction');
 var Promise = require('bluebird');
 Promise.promisifyAll(mongoose);
 var Schema = mongoose.Schema;
@@ -9,7 +9,8 @@ var AccountSchema = new Schema({
   accountType: {type: String, required: true},
   initialBalance: {type: Number, required: true},
   minimumRequired: {type: Number, required: true},
-  transactions: [Transaction.schema]
+  transactions: [{type : Schema.Types.ObjectId, ref: 'Transaction'}]
 });
+
 
 module.exports = mongoose.model('Account', AccountSchema);

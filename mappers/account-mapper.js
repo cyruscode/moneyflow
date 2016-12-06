@@ -15,8 +15,15 @@ class AccountMapper {
     return account;
   }
 
-  map({_id, bankName, accountType, initialBalance, minimumRequired, transactions= []}){
-    return {id : _id, bankName, accountType, initialBalance, minimumRequired, transactions : transactions.map((transaction) => transactionMapper.map(transaction))};
+  map({_id, bankName, accountType, initialBalance, minimumRequired, transactions= [], __v}){
+    return {
+      id : _id,
+      bankName,
+      accountType,
+      initialBalance,
+      minimumRequired,
+      transactions : transactions.map((transaction) => transactionMapper.map(transaction)),
+      version : __v};
   }
 }
 

@@ -15,8 +15,15 @@ class UserMapper {
     return user;
   }
 
-  map({_id, username, password, email, lastLogin, accounts = []} = user) {
-    return {id : _id, username, password, email, lastLogin, accounts: accounts.map((account) => accountMapper.map(account))};
+  map({_id, username, password, email, lastLogin, accounts = [], __v} = user) {
+    return {
+      id : _id,
+      username,
+      password,
+      email,
+      lastLogin,
+      accounts: accounts.map((account) => accountMapper.map(account)),
+      version : __v};
   }
 
   requestToExistingUser(req, user) {

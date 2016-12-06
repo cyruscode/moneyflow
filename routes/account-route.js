@@ -7,6 +7,8 @@ const accountMapper = require("../mappers/account-mapper.js");
 const accountService = require("../services/account-service.js");
 const accountSchema = require("../schema/accountSchema");
 
+const responseMapper = require('../mappers/response-mapper');
+
 let router = express.Router();
 
 router.route("/:userId/accounts", validate({body: accountSchema}))
@@ -16,7 +18,9 @@ router.route("/:userId/accounts", validate({body: accountSchema}))
 
     accountService.createAccount(userId, account)
       .then(function (newAccount) {
-        return res.json(accountMapper.map(newAccount));
+        let mappedAccount = accountMapper.map(newAccount);
+        res.location('/users/'+userId + '/account/'+  mappedAccount.id);
+        return res.status(201).json(responseMapper.map(201,mappedAccount));
       })
       .catch(function (err) {
         return res.send(err);
@@ -25,13 +29,16 @@ router.route("/:userId/accounts", validate({body: accountSchema}))
 
   .get(function (req, res) {
     let userId = req.params.userId;
+    let {wTransactions} =req.query;
 
     if (userId == undefined) {
       res.send("UserId undefined");
     }
-    accountService.getAccounts(userId)
+    accountService.getAccounts(userId, wTransactions)
       .then(function (accounts) {
-        return res.json(accounts.map((account) => accountMapper.map(account)));
+        let mappedAccounts =accounts.map((account) => accountMapper.map(account));
+
+        return res.json(responseMapper.map(200, mappedAccounts));
       })
       .catch(function (err) {
         return res.send(err);
@@ -41,10 +48,10 @@ router.route("/:userId/accounts", validate({body: accountSchema}))
 router.route("/:userId/accounts/:accountId", validate({body: accountSchema}))
   .get(function (req, res) {
     let {userId, accountId} = req.params;
-
-    accountService.getAccount(userId, accountId)
+    let  {wTransactions} = req.query;
+    accountService.getAccount(userId, accountId, wTransactions)
       .then(function (account) {
-        return res.json(accountMapper.map(account))
+        return res.json(responseMapper.map(200, accountMapper.map(account)));
       })
       .catch(function (err) {
         return res.send(err);
@@ -58,7 +65,7 @@ router.route("/:userId/accounts/:accountId", validate({body: accountSchema}))
     account._id = accountId;
     accountService.updateAccount(userId, account)
       .then(function (account) {
-        return res.json(accountMapper.map(account));
+        return res.json(responseMapper.map(200,accountMapper.map(account)));
       })
       .catch(function (err) {
         return res.send(err);

@@ -4,29 +4,37 @@ const express = require('express');
 const validate = require('express-jsonschema').validate;
 
 const userSchema = require('../schema/userSchema');
-const userMapper = require("../mappers/user-mapper");
 const userService = require("../services/user-service");
+const userMapper = require("../mappers/user-mapper");
+const responseMapper = require('../mappers/response-mapper');
 
 let router = express.Router();
 
 router.route('', validate({body: userSchema}))
   .post(function (req, res) {
-
     let user = userMapper.requestToUser(req.body);
 
     userService.saveUser(user)
-      .then(function (user) {
-        return res.json(userMapper.map(user));
+      .then(function (newUser) {
+
+        let mappedUser = userMapper.map(newUser);
+        res.location('/api/users/' + mappedUser.id)
+        return res.json(201, responseMapper.map(201, mappedUser));
       })
       .catch(function (err) {
+
+
         return res.send(err);
       });
   })
 
   .get(function (req, res) {
-    userService.getUsers()
+    let {page, limit} = req.query;
+
+    userService.getUsers(page, limit)
       .then(function (users) {
-        return res.json(users.map((user)=> userMapper.map(user)));
+        let mappedUsers = users.map((user)=> userMapper.map(user));
+        return res.json(responseMapper.map(200, mappedUsers));
       })
       .catch(function (err) {
         return res.send(err);
@@ -39,7 +47,7 @@ router.route("/:id", validate({body: userSchema}))
     userService.getUser(req.params.id)
       .then(function (user) {
 
-        return res.json(userMapper.map(user));
+        return res.json(responseMapper.map(200, userMapper.map(user)));
       })
       .catch(function (err) {
         return res.send(err);
@@ -54,7 +62,7 @@ router.route("/:id", validate({body: userSchema}))
 
         userService.saveUser(mappedUser)
           .then(function (newUser) {
-            return res.json(userMapper.map(newUser));
+            return res.json(responseMapper.map(200, userMapper.map(newUser)));
           })
           .catch(function (err) {
             return res.send(err);

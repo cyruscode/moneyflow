@@ -2,8 +2,7 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var Promise = require('bluebird');
-Promise.promisifyAll(mongoose);
+mongoose.promise = require('bluebird');
 
 var Account = require('./account.js');
 

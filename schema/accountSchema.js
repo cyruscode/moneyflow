@@ -23,7 +23,7 @@ var accountSchema = {
     },
     transactions: {
       type: "array",
-      items: transactionSchema
+     items: transactionSchema
     }
   }
 };
