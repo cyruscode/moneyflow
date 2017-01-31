@@ -12,69 +12,82 @@ let router = express.Router();
 
 router.route("/:userId/accounts/:accountId/transactions", validate({body: transactionSchema}))
 
-  .post(function (req, res) {
+  .post((req, res) => {
     let {userId, accountId} = req.params;
     let transaction = transactionMapper.requestToTransaction(req.body);
 
     transactionService.create(userId, accountId, transaction)
-      .then(function (newTransaction) {
-        let mappedTransaction  = transactionMapper.map(newTransaction);
+      .then(newTransaction => {
+        return transactionMapper.map(newTransaction);
+      })
+      .then(mappedTransaction => {
         res.location('api/users/{{userId}}/accounts/{{accountId}}/transactions/{{mappedTransaction.id}}');
-        return res.status(201).json(responseMapper.map(201, mappedTransaction));
-      }).catch(function (err) {
-      return res.status(500).send(err);
-    });
+        res.status(201).json(responseMapper.map(201, mappedTransaction));
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
   })
 
-  .get(function (req, res) {
+  .get((req, res) => {
     let {accountId} = req.params;
     let {page, limit} = req.query;
     transactionService.getTransactions(accountId, page, limit)
-      .then(function (transactions) {
-        let mappedTransactions =transactions.map((transaction)=> transactionMapper.map(transaction));
-        return res.status(200).json(responseMapper.map(200, mappedTransactions));
-      }).catch(function (err) {
-      return res.status(500).send(err);
-    });
+      .then(transactions => {
+        return transactions.map((transaction) => transactionMapper.map(transaction));
+      })
+      .then(mappedTransactions => {
+        res.status(200).json(responseMapper.map(200, mappedTransactions));
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
   });
 
 
 router.route("/:userId/accounts/:accountId/transactions/:transactionId", validate({body: transactionSchema}))
-  .get(function (req, res) {
+  .get((req, res) => {
     let {transactionId} = req.params;
 
     transactionService.getTransaction(transactionId)
-      .then(function (transaction) {
-        let mappedTransaction= transactionMapper.map(transaction);
-
-        return res.json(responseMapper.map(200, mappedTransaction));
-      }).catch(function (err) {
-      return res.send(err);
-    });
+      .then(transaction => {
+        return transactionMapper.map(transaction);
+      })
+      .then(mappedTransaction => {
+        res.json(responseMapper.map(200, mappedTransaction));
+      })
+      .catch(err => {
+        res.send(err);
+      });
   })
 
-  .put(function (req, res) {
+  .put((req, res) => {
     let transaction = req.body;
     let {transactionId} = req.params;
     transaction._id = transactionId;
     let newTransaction = transactionMapper.requestToTransaction(transaction);
 
     transactionService.update(newTransaction)
-      .then(function (newTransaction) {
-        return res.json(responseMapper.map(200,transactionMapper.map(newTransaction)));
-      }).catch(function (err) {
-      return res.send(err);
-    });
+      .then(newTransaction => {
+        return transactionMapper.map(newTransaction);
+      })
+      .then(mappedTransaction => {
+        res.json(responseMapper.map(200, mappedTransaction));
+      })
+      .catch(err => {
+        res.send(err);
+      });
   })
 
-  .delete(function (req, res) {
+  .delete((req, res) => {
     let {userId, accountId, transactionId} = req.params;
     transactionService.delete(userId, accountId, transactionId)
-      .then(function (account) {
-        return res.json(account);
-      }).catch(function (err) {
-      return res.send(err);
-    })
+      .then(account => {
+        res.json(account);
+      })
+      .catch(err => {
+        res.send(err);
+      })
   });
 
 module.exports = router;

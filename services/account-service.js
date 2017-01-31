@@ -14,100 +14,67 @@ class AccountService {
   }
 
   getAccounts(userId, wTransactions = false) {
-    var me = this;
-
-    return new Promise(function (resolve, reject) {
-      me.userService.getUser(userId, wTransactions)
-        .then(function (user) {
-          return resolve(user.accounts);
-        })
-        .catch(function (err) {
-          return reject(err);
-        });
-    });
+    return this.userService.getUser(userId, wTransactions)
+      .then(user => {
+        return Promise.resolve(user.accounts);
+      });
   }
 
   getAccount(userId, accountId, wTransactions = false) {
-    var me = this;
-    return new Promise(function (resolve, reject) {
-      me.getAccounts(userId, wTransactions)
-        .then(function (accounts) {
-          return resolve(accounts.id(accountId));
-        }).catch(function (err) {
-        return reject(err);
+    return this.getAccounts(userId, wTransactions)
+      .then(accounts => {
+        return Promise.resolve(accounts.id(accountId));
       });
-    });
   }
 
   createAccount(userId, newAccount) {
-    var me = this;
-    return new Promise(function (resolve, reject) {
-      me.userService.getUser(userId)
-        .then(function (user) {
-          user.accounts.push(newAccount);
+    this.userService.getUser(userId)
+      .then(user => {
+        user.accounts.push(newAccount);
 
-          user.saveAsync()
-            .then(function (user) {
-              return resolve(newAccount)
-            }).catch(function (err) {
-            return reject(err)
+        user.saveAsync()
+          .then(() => {
+            return Promise.resolve(newAccount);
           });
-        })
-        .catch(function (err) {
-          return reject(err);
-        });
-    });
+      });
   }
 
   updateAccount(userId, newAccount) {
-    var me = this;
+    this.userService.getUser(userId)
+      .then(user => {
 
-    return new Promise(function (resolve, reject) {
-      me.userService.getUser(userId)
-        .then(function (user) {
+        let oldAccount = user.accounts.id(newAccount._id);
+        let index = user.accounts.indexOf(oldAccount);
 
-          let oldAccount = user.accounts.id(newAccount._id);
-          let index = user.accounts.indexOf(oldAccount);
+        if (index < 0) {
+          return reject("account not found");
+        }
+        user.accounts.splice(index, 1, newAccount);
 
-          if (index < 0) {
-            return reject("account not found");
-          }
-          user.accounts.splice(index, 1, newAccount);
-
-          user.saveAsync()
-            .then(function (user) {
-              return resolve(newAccount)
-            }).catch(function (err) {
-            return reject(err)
+        user.saveAsync()
+          .then(() => {
+            return Promise.resolve(newAccount);
           });
-        })
-        .catch(function (err) {
-          return reject(err);
-        });
-    });
+      });
   }
 
   deleteAccount(userId, accountId) {
-    var me = this;
-    return new Promise(function (resolve, reject) {
-      me.userService.getUser(userId)
-        .then(function (user) {
+    this.userService.getUser(userId)
+      .then(user => {
 
-          user.accounts.id(accountId).remove();
+        user.accounts.id(accountId).remove();
 
-          user.saveAsync()
-            .then(function (user) {
-              return resolve(user)
-            }).catch(function (err) {
-            return reject(err)
+        user.saveAsync()
+          .then(user => {
+            return Promise.resolve(user)
           });
-        })
-        .catch(function (err) {
-          return reject(err);
-        });
-    });
+      });
   }
 }
 
 
-module.exports = new AccountService({_user: User, _userService: userService, _transactionService: transactionService});
+module.exports = new AccountService({
+  _user: User,
+  _userService: userService,
+  _transactionService: transactionService
+});

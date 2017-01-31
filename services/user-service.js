@@ -7,41 +7,29 @@ class UserService {
     this.options = options;
   }
 
-  getUsers(pageNumber = 0, pageSize = 1) {
-    var me = this;
-    return new Promise(function (resolve, reject) {
-      me.options._user
-        .find({})
-        .skip(pageNumber * pageSize)
-        .limit(parseInt(pageSize))
-        .sort('_id')
-        .exec(function (err, users) {
+  getUsers(wTransactions =false, pageNumber = 0, pageSize = 1) {
+    let query = this.options._user
+      .find({})
+      .skip(pageNumber * pageSize)
+      .limit(parseInt(pageSize))
+      .sort('_id');
 
-          if (err) {
-            return reject(err);
-          }
+    if (wTransactions ===  'true') {
+      query.populate('accounts.transactions');
+    }
 
-          return resolve(users);
-        });
-    });
+    return query.exec();
   }
 
   getUser(userId, wTransactions) {
-    var me = this;
-    return new Promise(function (resolve, reject) {
-      let query = me.options._user.findOne({_id: userId});
+      let query = this.options._user
+        .findOne({_id: userId});
+
       if (wTransactions === 'true') {
         query.populate('accounts.transactions');
       }
 
-      query.exec(function (err, user) {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve(user);
-      });
-    });
+     return query.exec();
   }
 
 

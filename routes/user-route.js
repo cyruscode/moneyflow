@@ -11,75 +11,77 @@ const responseMapper = require('../mappers/response-mapper');
 let router = express.Router();
 
 router.route('', validate({body: userSchema}))
-  .post(function (req, res) {
+  .post((req, res) => {
     let user = userMapper.requestToUser(req.body);
 
     userService.saveUser(user)
-      .then(function (newUser) {
+      .then(newUser => {
 
         let mappedUser = userMapper.map(newUser);
         res.location('/api/users/' + mappedUser.id)
-        return res.json(201, responseMapper.map(201, mappedUser));
+        res.json(201, responseMapper.map(201, mappedUser));
       })
-      .catch(function (err) {
-
-
-        return res.send(err);
+      .catch(err => {
+        res.send(err);
       });
   })
 
-  .get(function (req, res) {
-    let {page, limit} = req.query;
+  .get((req, res) => {
+    let {transactions, page, limit} = req.query;
 
-    userService.getUsers(page, limit)
-      .then(function (users) {
-        let mappedUsers = users.map((user)=> userMapper.map(user));
-        return res.json(responseMapper.map(200, mappedUsers));
+    return userService.getUsers(transactions, page, limit)
+      .then(users => {
+        return users.map(user => userMapper.map(user));
+      }).then(mappedUsers => {
+        res.json(responseMapper.map(200, mappedUsers));
       })
-      .catch(function (err) {
-        return res.send(err);
+      .catch(err => {
+        res.send(err);
       });
   });
 
 router.route("/:id", validate({body: userSchema}))
-  .get(function (req, res) {
+  .get((req, res) => {
+    let {transactions} = req.query;
 
-    userService.getUser(req.params.id)
-      .then(function (user) {
-
-        return res.json(responseMapper.map(200, userMapper.map(user)));
+    return userService.getUser(req.params.id, transactions)
+      .then(user => {
+        return userMapper.map(user);
       })
-      .catch(function (err) {
-        return res.send(err);
+      .then(mappedUser => {
+        res.json(responseMapper.map(200, mappedUser));
+      })
+      .catch(err => {
+        res.send(err);
       });
   })
 
-  .put(function (req, res) {
+  .put((req, res) => {
     userService.getUser(req.params.id)
-      .then(function (user) {
-
-        let mappedUser = userMapper.requestToExistingUser(req, user);
-
+      .then(user => {
+        userMapper.requestToExistingUser(req, user);
+      })
+      .then(mappedUser => {
         userService.saveUser(mappedUser)
-          .then(function (newUser) {
-            return res.json(responseMapper.map(200, userMapper.map(newUser)));
+          .then(savedUser => {
+            return userMapper.map(savedUser);
           })
-          .catch(function (err) {
-            return res.send(err);
+          .then(mappedUser => {
+            res.json(responseMapper.map(200, mappedUser));
           });
       })
-      .catch(function (err) {
-        return res.send(err);
+      .catch(err => {
+        res.send(err);
       });
   })
 
-  .delete(function (req, res) {
+  .delete((req, res) => {
     userService.deleteUser(req.params.id)
-      .then(function (success) {
-        return res.json({message: 'Successfully deleted'});
+      .then(() => {
+        res.json({message: 'Successfully deleted'});
       })
-      .catch(function (err) {
-        return res.send(err);
+      .catch(err => {
+        res.send(err);
       });
   });
 

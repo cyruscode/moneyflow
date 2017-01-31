@@ -18,114 +18,70 @@ class TransactionService {
   }
 
   create(userId, accountId, transaction) {
-    var me = this;
+    return this.userService.getUser(userId)
+      .then(user => {
+        let account = user.accounts.id(accountId);
 
-    return new Promise(function (resolve, reject) {
-      me.userService.getUser(userId)
-        .then(function (user) {
-          let account = user.accounts.id(accountId);
+        if (account === undefined) {
+          return Promise.reject('account not found');
+        }
+        transaction._creator = account._id;
 
-          if (account === undefined) {
-            reject('account not found');
-          }
-          transaction._creator = account._id;
-
-          transaction.save()
-            .then(function(savedTransaction){
+        transaction.save()
+          .then(savedTransaction => {
 
             account.transactions.push(savedTransaction);
-            user.save().catch(function(err){return reject(err);});
-
-            return resolve(savedTransaction);
-          }).catch(function(err){return reject(err);});
-
-        }).catch(function (err) {
-        return reject(err);
+            user.save()
+              .then(() => {
+                return Promise.resolve(savedTransaction);
+              });
+          });
       });
-    });
 
   }
 
   getTransactions(accountId, pageNumber = 0, pageSize = 10) {
-    var me = this;
-    return new Promise(function (resolve, reject) {
-      me._transaction
-        .find({_creator: accountId})
-        .skip(pageNumber * pageSize)
-        .limit(parseInt(pageSize))
-        .exec(function (err, transactions) {
-
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve(transactions);
-      });
-    });
+    return this._transaction
+      .find({_creator: accountId})
+      .skip(pageNumber * pageSize)
+      .limit(parseInt(pageSize))
+      .exec();
   }
 
   getTransaction(transactionId) {
-
-    var me = this;
-    return new Promise(function (resolve, reject) {
-
-      me._transaction
-        .findOne({_id: transactionId})
-        .exec(function (err, transaction) {
-
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve(transaction);
-      });
-    });
+    return this._transaction
+      .findOne({_id: transactionId})
+      .exec();
   }
 
   update(transaction) {
-    var me= this;
-    return new Promise(function (resolve, reject) {
-      me._transaction.findById(transaction._id)
-        .then(function (originTransaction) {
-
-          let mappedTransaction = transactionMapper.mapExistingTransaction(transaction, originTransaction);
-
-          mappedTransaction.save().then(function (updatedTransaction) {
-            return resolve(updatedTransaction);
-          });
-      }).catch(function(err){reject(err)});
-    });
+    this._transaction.findById(transaction._id)
+      .then((originTransaction) => {
+        return transactionMapper.mapExistingTransaction(transaction, originTransaction);
+      })
+      .then(mappedTransaction => {
+        return mappedTransaction.save();
+      });
   }
 
   delete(userId, accountId, transactionId) {
-    var me = this;
-
-    return new Promise(function (resolve, reject) {
-      me.userService.getUser(userId)
-        .then(function (user) {
-
-          let account = user.accounts.id(accountId);
-          account.transactions.pull({_id: transactionId});
-
-          user.saveAsync()
-            .then(function (user) {
-
-              me._transaction.remove({_id :transactionId})
-                .then(function(err){
-                  return resolve(account);
+    return this.userService.getUser(userId)
+      .then(user => {
+        let account = user.accounts.id(accountId);
+        account.transactions.pull({_id: transactionId});
+        user.save()
+          .then(() => {
+            this._transaction.remove({_id: transactionId})
+              .then(() => {
+                return Promise.resolve(account);
               });
-            }).catch(function (err) {
-            return reject(err);
           });
-        }).catch(function (err) {
-        return reject(err);
       });
-    });
   }
 }
 
 module.exports = new TransactionService({
-  _user : User,
+  _user: User,
   _transaction: Transaction,
   _userService: userService,
   _accountService: accountService

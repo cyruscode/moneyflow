@@ -15,14 +15,14 @@ class AccountMapper {
     return account;
   }
 
-  map({_id, bankName, accountType, initialBalance, minimumRequired, transactions= [], __v}){
+  map({_id, bankName, accountType, initialBalance, minimumRequired, transactions= [], __v} = account) {
     return {
       id : _id,
       bankName,
       accountType,
       initialBalance,
       minimumRequired,
-      transactions : transactions.map((transaction) => transactionMapper.map(transaction)),
+      transactions : transactions.map(transaction => transactionMapper.map(transaction)),
       version : __v};
   }
 }

@@ -1,10 +1,10 @@
 "use strict";
 
-var Transaction = require("../models/transaction");
+let Transaction = require("../models/transaction");
 
 class TransactionMapper {
 
-  map({_id, date, amount, note,__v} = input) {
+  map({_id, date, amount, note,__v} = transaction) {
     return {id: _id, date, amount, note, version: __v};
   }
 

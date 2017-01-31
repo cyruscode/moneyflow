@@ -9,35 +9,39 @@ var UserService = require('./../services/user-service');
 var AccountService = require('./../services/account-service');
 
 
-describe('AccountService', function () {
+describe('AccountService', () => {
 
-  var userService = new UserService({_user: User});
-  var accountService = new AccountService({_userService: userService});
+  let userService;
+  let accountService;
 
-  it('should create the account for the user', function (done) {
+  beforeEach(function(done){
+    userService = new UserService({_user: User});
+    accountService = new AccountService({_userService: userService});
+    done();
+  });
 
-    var u = new User();
-    u.username = 'someUser';
-    u.password = 'toto';
-    u.email = 'email@gmail.com';
+  it('should create the account for the user', () => {
 
-    userService.saveUser(u).then(function (user) {
+    var u = {
+      username: 'someUser',
+      password: 'toto',
+      email: 'email@gmail.com'
+    };
+    var account = {
+      bankName: 'Desjardins',
+      accountType: 'Chequing',
+      initialBalance: 0,
+      minimumRequired: 5000
+    };
 
-      var account = {
-        bankName: 'Desjardins',
-        accountType: 'Chequing',
-        initialBalance: 0,
-        minimumRequired: 5000
-      };
-
+    return userService.saveUser(u).then(user => {
       accountService.createAccount(user._id, account)
-        .then(function (savedAccount) {
+        .then(savedAccount => {
           !should.equal(savedAccount._id, null);
           savedAccount.bankName.should.equal('Desjardins');
           savedAccount.accountType.should.equal('Chequing');
           savedAccount.initialBalance.should.equal(0);
           savedAccount.minimumRequired.should.equal(5000);
-          done();
         });
     });
   });
