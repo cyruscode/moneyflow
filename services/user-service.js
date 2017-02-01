@@ -7,7 +7,7 @@ class UserService {
     this.options = options;
   }
 
-  getUsers(wTransactions =false, pageNumber = 0, pageSize = 1) {
+  getUsers(wTransactions =false, pageNumber = 0, pageSize = 10) {
     let query = this.options._user
       .find({})
       .skip(pageNumber * pageSize)
@@ -22,8 +22,7 @@ class UserService {
   }
 
   getUser(userId, wTransactions) {
-      let query = this.options._user
-        .findOne({_id: userId});
+      let query = this.options._user.findOne({_id: userId});
 
       if (wTransactions === 'true') {
         query.populate('accounts.transactions');

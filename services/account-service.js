@@ -28,11 +28,11 @@ class AccountService {
   }
 
   createAccount(userId, newAccount) {
-    this.userService.getUser(userId)
+    return this.userService.getUser(userId)
       .then(user => {
         user.accounts.push(newAccount);
 
-        user.saveAsync()
+        return user.save()
           .then(() => {
             return Promise.resolve(newAccount);
           });
@@ -40,18 +40,18 @@ class AccountService {
   }
 
   updateAccount(userId, newAccount) {
-    this.userService.getUser(userId)
+    return this.userService.getUser(userId)
       .then(user => {
 
         let oldAccount = user.accounts.id(newAccount._id);
         let index = user.accounts.indexOf(oldAccount);
 
         if (index < 0) {
-          return reject("account not found");
+          return Promise.reject("account not found");
         }
         user.accounts.splice(index, 1, newAccount);
 
-        user.saveAsync()
+        return user.save()
           .then(() => {
             return Promise.resolve(newAccount);
           });
@@ -59,12 +59,12 @@ class AccountService {
   }
 
   deleteAccount(userId, accountId) {
-    this.userService.getUser(userId)
+    return this.userService.getUser(userId)
       .then(user => {
 
         user.accounts.id(accountId).remove();
 
-        user.saveAsync()
+        return user.save()
           .then(user => {
             return Promise.resolve(user)
           });

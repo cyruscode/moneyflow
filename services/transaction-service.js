@@ -27,11 +27,11 @@ class TransactionService {
         }
         transaction._creator = account._id;
 
-        transaction.save()
+        return transaction.save()
           .then(savedTransaction => {
 
             account.transactions.push(savedTransaction);
-            user.save()
+            return user.save()
               .then(() => {
                 return Promise.resolve(savedTransaction);
               });
@@ -55,7 +55,7 @@ class TransactionService {
   }
 
   update(transaction) {
-    this._transaction.findById(transaction._id)
+    return this._transaction.findById(transaction._id)
       .then((originTransaction) => {
         return transactionMapper.mapExistingTransaction(transaction, originTransaction);
       })
@@ -69,7 +69,7 @@ class TransactionService {
       .then(user => {
         let account = user.accounts.id(accountId);
         account.transactions.pull({_id: transactionId});
-        user.save()
+        return user.save()
           .then(() => {
             this._transaction.remove({_id: transactionId})
               .then(() => {

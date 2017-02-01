@@ -21,7 +21,7 @@ router.route("/:userId/accounts", validate({body: accountSchema}))
         return accountMapper.map(newAccount);
       })
       .then(mappedAccount => {
-        res.location('/users/'+userId + '/account/'+  mappedAccount.id);
+        res.location(`/users/${userId}/account/${mappedAccount.id}`);
         res.status(201).json(responseMapper.map(201,mappedAccount));
       })
       .catch(err => {

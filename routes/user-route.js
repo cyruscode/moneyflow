@@ -18,7 +18,7 @@ router.route('', validate({body: userSchema}))
       .then(newUser => {
 
         let mappedUser = userMapper.map(newUser);
-        res.location('/api/users/' + mappedUser.id)
+        res.location(`/api/users/${mappedUser.id}`)
         res.json(201, responseMapper.map(201, mappedUser));
       })
       .catch(err => {

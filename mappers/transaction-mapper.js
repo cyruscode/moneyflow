@@ -9,9 +9,8 @@ class TransactionMapper {
   }
 
   //used for creation
-  requestToTransaction({_id, date, amount, note}=req) {
+  requestToTransaction({date, amount, note}=req) {
     let transaction = new Transaction();
-    transaction._id = _id;
     transaction.date = date;
     transaction.amount = amount;
     transaction.note = note;

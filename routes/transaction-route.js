@@ -21,7 +21,7 @@ router.route("/:userId/accounts/:accountId/transactions", validate({body: transa
         return transactionMapper.map(newTransaction);
       })
       .then(mappedTransaction => {
-        res.location('api/users/{{userId}}/accounts/{{accountId}}/transactions/{{mappedTransaction.id}}');
+        res.location(`api/users/{{userId}}/accounts/${accountId}/transactions/${mappedTransaction.id}`);
         res.status(201).json(responseMapper.map(201, mappedTransaction));
       })
       .catch(err => {
@@ -64,8 +64,7 @@ router.route("/:userId/accounts/:accountId/transactions/:transactionId", validat
   .put((req, res) => {
     let transaction = req.body;
     let {transactionId} = req.params;
-    transaction._id = transactionId;
-    let newTransaction = transactionMapper.requestToTransaction(transaction);
+    let newTransaction = transactionMapper.requestToExistingTransaction(transaction, transactionId);
 
     transactionService.update(newTransaction)
       .then(newTransaction => {
