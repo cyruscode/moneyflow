@@ -19,10 +19,10 @@ router.route('', validate({body: userSchema}))
 
         let mappedUser = userMapper.map(newUser);
         res.location(`/api/users/${mappedUser.id}`)
-        res.json(201, responseMapper.map(201, mappedUser));
+        res.status(201).json(201, responseMapper.map(201, mappedUser));
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   })
 
@@ -33,10 +33,10 @@ router.route('', validate({body: userSchema}))
       .then(users => {
         return users.map(user => userMapper.map(user));
       }).then(mappedUsers => {
-        res.json(responseMapper.map(200, mappedUsers));
+        res.status(200).json(responseMapper.map(200, mappedUsers));
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   });
 
@@ -49,39 +49,39 @@ router.route("/:id", validate({body: userSchema}))
         return userMapper.map(user);
       })
       .then(mappedUser => {
-        res.json(responseMapper.map(200, mappedUser));
+        res.status(200).json(responseMapper.map(200, mappedUser));
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   })
 
   .put((req, res) => {
     userService.getUser(req.params.id)
       .then(user => {
-        userMapper.requestToExistingUser(req, user);
+        return userMapper.requestToExistingUser(req, user);
       })
       .then(mappedUser => {
-        userService.saveUser(mappedUser)
+        return userService.saveUser(mappedUser)
           .then(savedUser => {
             return userMapper.map(savedUser);
           })
           .then(mappedUser => {
-            res.json(responseMapper.map(200, mappedUser));
+            res.status(200).json(responseMapper.map(200, mappedUser));
           });
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   })
 
   .delete((req, res) => {
     userService.deleteUser(req.params.id)
       .then(() => {
-        res.json({message: 'Successfully deleted'});
+        res.status(200).json({message: 'Successfully deleted'});
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   });
 

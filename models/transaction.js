@@ -1,12 +1,10 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
 mongoose.promise = require('bluebird');
+let Schema = mongoose.Schema;
 
-
-
-var TransactionSchema = new Schema({
+let TransactionSchema = new Schema({
   _creator: {type: Schema.Types.ObjectId, ref: 'Account'},
   date: {type: Date, required: true},
   amount: {type: Number, required: true},

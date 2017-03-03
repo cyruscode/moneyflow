@@ -1,10 +1,9 @@
-var mongoose = require('mongoose');
-var Transaction = require('./transaction');
-var Promise = require('bluebird');
-Promise.promisifyAll(mongoose);
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
+let Transaction = require('./transaction');
+let Schema = mongoose.Schema;
 
-var AccountSchema = new Schema({
+let AccountSchema = new Schema({
   bankName: {type: String, required: true},
   accountType: {type: String, required: true},
   initialBalance: {type: Number, required: true},

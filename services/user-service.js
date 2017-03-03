@@ -33,11 +33,11 @@ class UserService {
 
 
   saveUser(user) {
-    return user.saveAsync();
+    return user.save();
   }
 
   deleteUser(userId) {
-    return this.options._user.removeAsync({_id: userId});
+    return this.options._user.remove({_id: userId});
   }
 }
 

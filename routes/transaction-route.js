@@ -54,10 +54,10 @@ router.route("/:userId/accounts/:accountId/transactions/:transactionId", validat
         return transactionMapper.map(transaction);
       })
       .then(mappedTransaction => {
-        res.json(responseMapper.map(200, mappedTransaction));
+        res.status(200).json(responseMapper.map(200, mappedTransaction));
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   })
 
@@ -71,10 +71,10 @@ router.route("/:userId/accounts/:accountId/transactions/:transactionId", validat
         return transactionMapper.map(newTransaction);
       })
       .then(mappedTransaction => {
-        res.json(responseMapper.map(200, mappedTransaction));
+        res.status(200).json(responseMapper.map(200, mappedTransaction));
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   })
 
@@ -82,10 +82,10 @@ router.route("/:userId/accounts/:accountId/transactions/:transactionId", validat
     let {userId, accountId, transactionId} = req.params;
     transactionService.delete(userId, accountId, transactionId)
       .then(account => {
-        res.json(account);
+        res.status(200).json(account);
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       })
   });
 

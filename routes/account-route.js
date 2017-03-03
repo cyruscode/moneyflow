@@ -25,7 +25,7 @@ router.route("/:userId/accounts", validate({body: accountSchema}))
         res.status(201).json(responseMapper.map(201,mappedAccount));
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   })
 
@@ -41,10 +41,10 @@ router.route("/:userId/accounts", validate({body: accountSchema}))
         return accounts.map(account => accountMapper.map(account));
       })
       .then(mappedAccounts => {
-        res.json(responseMapper.map(200, mappedAccounts));
+        res.status(200).json(responseMapper.map(200, mappedAccounts));
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   });
 
@@ -57,10 +57,10 @@ router.route("/:userId/accounts/:accountId", validate({body: accountSchema}))
         return accountMapper.map(account);
       })
       .then(mappedAccount => {
-        return res.json(responseMapper.map(200, mappedAccount));
+        return res.status(200).json(responseMapper.map(200, mappedAccount));
       })
       .catch(err => {
-        return res.send(err);
+        res.status(500).json(err);
       });
   })
 
@@ -73,10 +73,10 @@ router.route("/:userId/accounts/:accountId", validate({body: accountSchema}))
       .then(account => {
         return accountMapper.map(account);
       }).then(mappedAccount => {
-        res.json(responseMapper.map(200, mappedAccount));
+        res.status(200).json(responseMapper.map(200, mappedAccount));
       })
       .catch(err => {
-        return res.send(err);
+        res.status(500).json(err);
       });
   })
 
@@ -85,10 +85,10 @@ router.route("/:userId/accounts/:accountId", validate({body: accountSchema}))
 
     accountService.deleteAccount(userId, accountId)
       .then(user => {
-        res.json(user);
+        res.status(200).json(user);
       })
       .catch(err => {
-        res.send(err);
+        res.status(500).json(err);
       });
   });
 

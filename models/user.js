@@ -1,12 +1,12 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-mongoose.promise = require('bluebird');
+let mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
+let Schema = mongoose.Schema;
 
-var Account = require('./account.js');
+let Account = require('./account.js');
 
-var UserSchema = new Schema({
+let UserSchema = new Schema({
   username: {type: String, required: true, unique: true},
   password: {type: String, required: true},
   email: {type: String, required: true},
