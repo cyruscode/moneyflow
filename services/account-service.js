@@ -16,14 +16,14 @@ class AccountService {
   getAccounts(userId, wTransactions = false) {
     return this.userService.getUser(userId, wTransactions)
       .then(user => {
-        return Promise.resolve(user.accounts);
+        return user.accounts;
       });
   }
 
-  getAccount(userId, accountId, wTransactions = false) {
+  getAccount(userId, accountId, wTransactions = true) {
     return this.getAccounts(userId, wTransactions)
       .then(accounts => {
-        return Promise.resolve(accounts.id(accountId));
+        return accounts.id(accountId);
       });
   }
 

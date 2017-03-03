@@ -8,3 +8,20 @@ import { AccountsComponent } from  './accounts/accounts.component';
 })
 export class AppComponent {
 }
+
+export class Transaction {
+  id: string;
+  amount: number;
+  date: number;
+  note: string;
+}
+
+export class Account {
+  id: string;
+  brankName: string;
+  accountType: string;
+  initialBalance: number;
+  minimumRequired: number;
+  transactions: Array<Transaction>;
+
+}

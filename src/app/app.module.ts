@@ -6,17 +6,32 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { AccountsComponent } from './accounts/accounts.component';
 import { AccountsService } from './accounts.service';
+import { TransactionsComponent } from './transactions/transactions.component';
+import { TransactionComponent } from './transaction/transaction.component';
+import {RouterModule} from "@angular/router";
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    AccountsComponent
+    AccountsComponent,
+    TransactionsComponent,
+    TransactionComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    RouterModule.forRoot([
+      {
+        path: 'accounts',
+        component: AccountsComponent
+      },
+      {
+        path: "transactions",
+        component: TransactionsComponent
+      }
+    ])
   ],
   providers: [AccountsService],
   bootstrap: [AppComponent]

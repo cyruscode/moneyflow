@@ -2,12 +2,10 @@
 <h2>Accounts</h2>
 
 <div class="container">
-  <div class="row" *ngFor="let account of accounts">
+  <div class="row" *ngFor="let account of accounts" (click)="onSelect(account)">
     <div class="card card-block">
       <h4 class="card-title">{{ account.bankName }}</h4>
       <p class="card-text">{{account.accountType}}</p>
-      <a href="#" class="card-link">Card link</a>
-      <a href="#" class="card-link">Another link</a>
     </div>
   </div>
 </div>

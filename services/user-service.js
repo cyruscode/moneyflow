@@ -24,7 +24,7 @@ class UserService {
   getUser(userId, wTransactions) {
       let query = this.options._user.findOne({_id: userId});
 
-      if (wTransactions === 'true') {
+      if (wTransactions === true) {
         query.populate('accounts.transactions');
       }
 
