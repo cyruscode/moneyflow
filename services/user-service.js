@@ -1,4 +1,5 @@
 "use strict";
+const Promise = require('bluebird');
 
 const User = require('../models/user.js');
 class UserService {
@@ -8,19 +9,19 @@ class UserService {
   }
 
   getUsers() {
-    return this.options._user.findAsync();
+    return Promise.resolve(this.options._user.find());
   }
 
   getUser(userId) {
-    return this.options._user.findByIdAsync(userId);
+    return Promise.resolve(this.options._user.findById(userId));
   }
 
   saveUser(user) {
-    return user.saveAsync();
+    return Promise.resolve(user.save());
   }
 
   deleteUser(userId) {
-    return this.options._user.removeAsync({_id: userId});
+    return Promise.resolve(this.options._user.remove({_id: userId}));
   }
 }
 

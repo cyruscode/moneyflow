@@ -8,7 +8,7 @@ const accountService = require("../services/account-service");
 class TransactionService {
 
     constructor(options) {
-        this.userService = options._userService;
+        this._userService = options._userService;
         this.accountService = options._accountService;
     }
 
@@ -41,7 +41,7 @@ class TransactionService {
     create(userId, accountId, transaction) {
         var me = this;
         return new Promise(function (resolve, reject) {
-            me.userService.getUser(userId)
+            me._userService.getUser(userId)
                 .then(function (user) {
                     let account = user.accounts.id(accountId);
                     account.transactions.push(transaction);
@@ -65,7 +65,7 @@ class TransactionService {
         var me = this;
 
         return new Promise(function (resolve, reject) {
-            me.userService.getUser(userId)
+            me._userService.getUser(userId)
                 .then(function (user) {
                     let transactions = user.accounts.id(accountId).transactions;
                     let oldTransaction = transactions.id(transaction._id);
@@ -90,7 +90,7 @@ class TransactionService {
         var me = this;
 
         return new Promise(function (resolve, reject) {
-            me.userService.getUser(userId)
+            me._userService.getUser(userId)
                 .then(function (user) {
 
                     let account = user.accounts.id(accountId);

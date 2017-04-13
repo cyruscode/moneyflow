@@ -10,71 +10,51 @@ const accountSchema = require("../schema/accountSchema");
 let router = express.Router();
 
 router.route("/:userId/accounts", validate({body: accountSchema}))
-  .post(function (req, res) {
+  .post((req, res) => {
     let userId = req.params.userId;
     let account = accountMapper.requestToAccount(req);
 
     accountService.createAccount(userId, account)
-      .then(function (newAccount) {
-        return res.json(accountMapper.map(newAccount));
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then((newAccount) => res.json(accountMapper.map(newAccount)))
+      .catch((err) => res.send(err))
   })
 
-  .get(function (req, res) {
+  .get((req, res) => {
     let userId = req.params.userId;
 
     if (userId == undefined) {
       res.send("UserId undefined");
     }
     accountService.getAccounts(userId)
-      .then(function (accounts) {
-        return res.json(accounts.map((account) => accountMapper.map(account)));
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then((accounts) => res.json(accounts.map((account) => accountMapper.map(account))))
+      .catch((err) => res.send(err));
   });
 
 router.route("/:userId/accounts/:accountId", validate({body: accountSchema}))
-  .get(function (req, res) {
+  .get((req, res) => {
     let {userId, accountId} = req.params;
 
     accountService.getAccount(userId, accountId)
-      .then(function (account) {
-        return res.json(accountMapper.map(account))
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then((account)  => res.json(accountMapper.map(account)))
+      .catch((err)  => res.send(err));
   })
 
-  .put(function (req, res) {
+  .put((req, res) => {
     let {userId, accountId} = req.params;
 
-    var account = accountMapper.requestToAccount(req);
+    let account = accountMapper.requestToAccount(req);
     account._id = accountId;
     accountService.updateAccount(userId, account)
-      .then(function (account) {
-        return res.json(accountMapper.map(account));
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then((account)  => res.json(accountMapper.map(account)))
+      .catch((err) => res.send(err));
   })
 
-  .delete(function (req, res) {
+  .delete((req, res) => {
     let {userId, accountId} = req.params;
 
     accountService.deleteAccount(userId, accountId)
-      .then(function (user) {
-        return res.json(user);
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then((user) => res.json(user))
+      .catch((err) => res.send(err));
   });
 
 

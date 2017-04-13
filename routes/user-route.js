@@ -10,69 +10,44 @@ const userService = require("../services/user-service");
 let router = express.Router();
 
 router.route('', validate({body: userSchema}))
-  .post(function (req, res) {
+  .post((req, res) => {
 
     let user = userMapper.requestToUser(req.body);
 
     userService.saveUser(user)
-      .then(function (user) {
-        return res.json(userMapper.map(user));
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then((user) => res.json(userMapper.map(user)))
+      .catch((err) => res.send(err));
   })
 
-  .get(function (req, res) {
+  .get((req, res) => {
     userService.getUsers()
-      .then(function (users) {
-        return res.json(users.map((user)=> userMapper.map(user)));
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then((users) => res.json(users.map((user) => userMapper.map(user))))
+      .catch((err) => res.send(err));
   });
 
 router.route("/:id", validate({body: userSchema}))
-  .get(function (req, res) {
+  .get((req, res) => {
 
     userService.getUser(req.params.id)
-      .then(function (user) {
-
-        return res.json(userMapper.map(user));
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then((user) => res.json(userMapper.map(user)))
+      .catch((err) => res.send(err));
   })
 
-  .put(function (req, res) {
+  .put((req, res) => {
     userService.getUser(req.params.id)
-      .then(function (user) {
+      .then((user) => {
 
         let mappedUser = userMapper.requestToExistingUser(req, user);
-
         userService.saveUser(mappedUser)
-          .then(function (newUser) {
-            return res.json(userMapper.map(newUser));
-          })
-          .catch(function (err) {
-            return res.send(err);
-          });
+          .then((newUser) => res.json(userMapper.map(newUser)));
       })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .catch((err) => res.send(err));
   })
 
-  .delete(function (req, res) {
+  .delete((req, res) => {
     userService.deleteUser(req.params.id)
-      .then(function (success) {
-        return res.json({message: 'Successfully deleted'});
-      })
-      .catch(function (err) {
-        return res.send(err);
-      });
+      .then(() => res.json({message: 'Successfully deleted'}))
+      .catch((err) => res.send(err));
   });
 
 
